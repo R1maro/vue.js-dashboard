@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from "vue-router";
 
  import dashboard from '../components/dashboard.vue';
+ import invoice from '../components/invoice/index.vue';
  import users_form from '../components/users-form.vue';
  import users_list from '../components/users-list.vue';
  import notfound from '../components/notfound.vue';
@@ -10,6 +11,10 @@ import {createRouter, createWebHistory} from "vue-router";
      {
          path : '/',
          component: dashboard
+     } ,
+     {
+         path : '/invoice',
+         component: invoice
      } ,
      {
          path : '/users-list',

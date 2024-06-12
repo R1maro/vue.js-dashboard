@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+
+    public function customers(){
+        $customers = Customer::orderBy('id','DESC')->get();
+        return response()->json([
+           'customers' => $customers
+        ],200);
+    }
     public function index()
     {
         //

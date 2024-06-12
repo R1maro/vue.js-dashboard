@@ -8,3 +8,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/get_all_invoices',[\App\Http\Controllers\InvoiceController::class , 'get_all_invoice']);
+Route::get('/search_invoice',[\App\Http\Controllers\InvoiceController::class , 'search_invoice']);
+Route::get('/create_invoice',[\App\Http\Controllers\InvoiceController::class , 'create_invoice']);
+Route::get('/customers',[\App\Http\Controllers\CustomerController::class , 'customers']);
+Route::get('/products',[\App\Http\Controllers\ProductController::class , 'products']);
+Route::post('/add_invoice',[\App\Http\Controllers\InvoiceController::class , 'add_invoice']);

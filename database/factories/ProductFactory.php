@@ -18,7 +18,7 @@ class ProductFactory extends Factory
     {
         return [
             //
-            'item_code'=> "IC-1000" . rand(10,500),
+            'item_code'=> "IC-1000" . rand(10,5000),
             'description' => 'Name Of Product' . rand(10,500),
             'unit_price' => mt_rand(100 , 1000)
         ];

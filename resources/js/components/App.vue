@@ -9,9 +9,20 @@
 
     <nav>
         <div>
-            <router-link to="/">dashboard</router-link>
-            <router-link to="/users-list">users-list</router-link>
-            <router-link to="/users-form">users-form</router-link>
+            <a href="" class="btn btn-secondary">
+                <router-link to="/">dashboard</router-link>
+            </a>
+            <a href="" class="btn btn-secondary">
+                <router-link to="/invoice">invoice</router-link>
+            </a>
+            <a href="" class="btn btn-secondary">
+                <router-link to="/users-form">users-form</router-link>
+            </a>
+            <a href="" class="btn btn-secondary">
+                <router-link to="/users-list">users-list</router-link>
+            </a>
+
+
         </div>
     </nav>
     <main>

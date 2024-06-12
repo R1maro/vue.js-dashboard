@@ -18,7 +18,7 @@ class InvoiceFactory extends Factory
     {
         return [
             //
-            'number' => $this->faker->numberBetween('10' , ' 1000'),
+            'number' => $this->faker->numberBetween('10' , ' 5000'),
             'customer_id' => $this->faker->numberBetween('1' , '10'),
             'date' => $this->faker->date,
             'due_date' => $this->faker->date,

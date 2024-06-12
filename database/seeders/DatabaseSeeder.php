@@ -11,7 +11,6 @@ use App\Models\Invoice;
 
 use App\Models\InvoiceItem;
 use App\Models\Product;
-use Database\Factories\InvoiceItemFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -22,10 +21,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
          Counter::factory(1)->create();
-         Product::factory(5)->create();
-         Customer::factory(5)->create();
-         Invoice::factory(5)->create();
-         InvoiceItem::factory(5)->create();
+         Product::factory(50)->create();
+         Customer::factory(50)->create();
+         Invoice::factory(100)->create();
+         InvoiceItem::factory(100)->create();
 
 //        User::factory()->create([
 //            'name' => 'Test User',

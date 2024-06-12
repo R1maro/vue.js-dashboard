@@ -1,3 +1,40 @@
+<script setup>
+
+import {onMounted, ref} from "vue";
+import axios from "axios";
+import {useRouter} from "vue-router";
+import router from "@/router/index.js";
+const route = useRouter();
+
+let invoices = ref([])
+let searchInvoice = ref([])
+
+onMounted(async () => {
+    getInvoices();
+})
+
+const getInvoices = async () => {
+    let response = await axios.get("api/get_all_invoices")
+    console.log('response' , response);
+    invoices.value = response.data.invoices
+}
+
+const search = async () => {
+    let response = await axios.get('api/search_invoice?s='+searchInvoice.value)
+    console.log('response' , response.data.invoices);
+    invoices.value = response.data.invoices
+}
+
+const newInvoice = async ()=>{
+    let form = await axios.get('/api/create_invoice')
+    console.log('form' , form.data);
+    router.push('/invoice/new')
+}
+const onShow = (id) => {
+
+    router.push('/invoice/show/' + id)
+}
+</script>
 <template>
 
     <div class="container">
@@ -59,7 +96,7 @@
 
                 <!-- item 1 -->
                 <div class="table--items" v-for="invoice in invoices" :key="invoice.id" v-if="invoices.length > 0">
-                    <a href="#" class="table--items--transactionId">
+                    <a href="#" @click="onShow(invoice.id)">
                         # {{invoice.id}}
                     </a>
                     <p>{{ invoice.date }}</p>
@@ -84,40 +121,7 @@
         </div>
     </div>
 </template>
-<script setup>
 
-import {onMounted, ref} from "vue";
-import axios from "axios";
-import {useRouter} from "vue-router";
-import router from "../../router";
-
-const route = useRouter();
-
-let invoices = ref([])
-let searchInvoice = ref([])
-
-onMounted(async () => {
-    getInvoices();
-})
-
-const getInvoices = async () => {
-    let response = await axios.get("api/get_all_invoices")
-    console.log('response' , response);
-    invoices.value = response.data.invoices
-}
-
-const search = async () => {
-    let response = await axios.get('api/search_invoice?s='+searchInvoice.value)
-    console.log('response' , response.data.invoices);
-    invoices.value = response.data.invoices
-}
-
-const newInvoice = async ()=>{
-    let form = await axios.get('/api/create_invoice')
-    console.log('form' , form.data);
-    router.push('/invoice/new')
-}
-</script>
 
 <style scoped>
 

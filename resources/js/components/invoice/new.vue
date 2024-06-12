@@ -1,9 +1,16 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import axios from "axios";
-import router from "@/router/index.js";
+import router from "../../router";
 
-let form = ref([])
+let form = ref({
+    date: '',
+    due_date: '',
+    number: '',
+    reference: '',
+    discount: 0,
+    terms_and_conditions: ''
+});
 let allcustomers = ref([])
 let customer_id = ref([])
 let item = ref([])
@@ -26,7 +33,6 @@ const indexForm = async () => {
 
 const getAllCustomers = async () => {
     let response = await axios.get('/api/customers')
-    // console.log('response' , response);
     allcustomers.value = response.data.customers
 }
 
@@ -36,12 +42,11 @@ const addCart = (item) => {
         item_code: item.item_code,
         description: item.description,
         unit_price: item.unit_price,
-        quantity: item.quantity
-    }
-    listCart.value.push(itemcart)
-    closeModal()
-
-}
+        quantity: 1
+    };
+    listCart.value.push(itemcart);
+    closeModal();
+};
 
 const removeItem = (i) => {
     listCart.value.splice(i, 1)
@@ -61,42 +66,45 @@ const getProducts = async () => {
 }
 
 const SubTotal = () => {
-    let total = 0
-    listCart.value.map((data) => {
-        total = total + (data.quantity * data.unit_price)
-    })
-    return total
-}
+    let total = 0;
+    listCart.value.forEach(data => {
+        total += data.quantity * data.unit_price;
+    });
+    return total;
+};
 
 const Total = () => {
-    return SubTotal() - form.value.discount
-}
-const onSave = () => {
+    const subtotal = SubTotal();
+    const discount = form.value.discount ? form.value.discount : 0;
+    return subtotal - discount;
+};
+const onSave = async () => {
     if (listCart.value.length >= 1) {
-        let subtotal = 0
-        subtotal = SubTotal()
+        const subtotal = SubTotal();
+        const total = Total();
 
-        let total = 0
-        total = Total()
+        const formData = new FormData();
+        formData.append('invoice_item', JSON.stringify(listCart.value));
+        formData.append('customer_id', customer_id.value);
+        formData.append('date', form.value.date);
+        formData.append('due_date', form.value.due_date);
+        formData.append('number', form.value.number);
+        formData.append('reference', form.value.reference);
+        formData.append('discount', form.value.discount);
+        formData.append('subtotal', subtotal);
+        formData.append('total', total);
+        formData.append('terms_and_conditions', form.value.terms_and_conditions);
 
-        const formData = new FormData()
-        formData.append('invoice_item', JSON.stringify(listCart.value))
-        formData.append('customer_id', customer_id.value)
-        formData.append('date', form.value.date)
-        formData.append('due_date', form.value.due_date)
-        formData.append('number', form.value.number)
-        formData.append('reference', form.value.reference)
-        formData.append('discount', form.value.discount)
-        formData.append('subtotal', subtotal)
-        formData.append('total', total)
-        formData.append('terms_and_conditions', form.value.terms_and_conditions)
-
-
-        axios.post('/api/add_invoice', formData)
-        listCart.value = []
-        router.push('/')
+        try {
+            await axios.post('/api/add_invoice', formData);
+            listCart.value = [];
+            router.push('/');
+        } catch (error) {
+            console.error('Error saving invoice:', error);
+        }
     }
-}
+};
+
 </script>
 
 <template>
@@ -117,8 +125,8 @@ const onSave = () => {
                     <div>
                         <p class="my-1">Customer</p>
                         <select name="" id="" class="input" v-model="customer_id">
-                            <option disabled></option>
-                            <option :value="customer_id" v-for="customer in allcustomers" :key="customer_id">
+                            <option disabled value="">Select a customer</option>
+                            <option :value="customer.id" v-for="customer in allcustomers" :key="customer.id">
                                 {{ customer.firstname }}
                             </option>
                         </select>
@@ -151,10 +159,10 @@ const onSave = () => {
                     <div class="table--items2" v-for="(itemcart , i)  in listCart" :key="itemcart.id">
                         <p> # {{ itemcart.item_code }} {{ itemcart.description }}</p>
                         <p>
-                            <input type="text" class="input" v-model="itemcart.unit_price">
+                            <input type="text" class="input" v-model.number="itemcart.unit_price">
                         </p>
                         <p>
-                            <input type="text" class="input" v-model="itemcart.quantity">
+                            <input type="text" class="input" v-model.number="itemcart.quantity">
                         </p>
                         <p v-if="itemcart.quantity">
                             $ {{ (itemcart.quantity) * (itemcart.unit_price) }}

@@ -13,3 +13,7 @@ Route::get('/create_invoice',[\App\Http\Controllers\InvoiceController::class , '
 Route::get('/customers',[\App\Http\Controllers\CustomerController::class , 'customers']);
 Route::get('/products',[\App\Http\Controllers\ProductController::class , 'products']);
 Route::post('/add_invoice',[\App\Http\Controllers\InvoiceController::class , 'add_invoice']);
+Route::get('/show_invoice/{id}',[\App\Http\Controllers\InvoiceController::class , 'show_invoice']);
+Route::get('/edit_invoice/{id}',[\App\Http\Controllers\InvoiceController::class , 'edit_invoice']);
+Route::get('/delete_invoice_items/{id}',[\App\Http\Controllers\InvoiceController::class , 'delete_invoice_items']);
+Route::post('/update_invoice/{id}',[\App\Http\Controllers\InvoiceController::class , 'update_invoice']);

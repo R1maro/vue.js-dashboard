@@ -6,6 +6,7 @@ use App\Models\Counter;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
 {
@@ -87,6 +88,104 @@ class InvoiceController extends Controller
 
             InvoiceItem::create($itemdata);
         }
+    }
+
+    public function show_invoice($id)
+    {
+        $invoice = Invoice::with(['customer', 'invoice_items.product'])->find($id);
+
+        // Calculate the subtotal
+        $sub_total = $invoice->invoice_items->sum(function ($item) {
+            return $item->unit_price * $item->quantity;
+        });
+
+
+        // Assuming discount is a percentage
+        $discount = $invoice->invoice_items->sum(function ($item) {
+            return $item->quantity * $item->discount;
+        });
+
+
+        // Calculate the total
+        $total = $sub_total - $discount;
+
+        // Add these calculated fields to the invoice object
+        $invoice->sub_total = $sub_total;
+        $invoice->total = $total;
+
+        return response()->json([
+            'invoice' => $invoice
+        ], 200);
+
+    }
+
+    public function edit_invoice($id)
+    {
+        $invoice = Invoice::with(['customer', 'invoice_items.product'])->find($id);
+
+        // Calculate the subtotal
+        $sub_total = $invoice->invoice_items->sum(function ($item) {
+            return $item->unit_price * $item->quantity;
+        });
+
+
+        // Assuming discount is a percentage
+        $discount = $invoice->invoice_items->sum(function ($item) {
+            return $item->quantity * $item->discount;
+        });
+
+        // Calculate the total
+        $total = $sub_total - $discount;
+
+        // Add these calculated fields to the invoice object
+        $invoice->sub_total = $sub_total;
+        $invoice->total = $total;
+
+        return response()->json([
+            'invoice' => $invoice
+        ], 200);
+    }
+
+    public function delete_invoice_items($id)
+    {
+        $invoiceitem = InvoiceItem::findOrFail($id);
+        $invoiceitem->delete();
+    }
+
+    public function update_invoice(Request $request, $id)
+    {
+        $invoice = Invoice::where('id', $id)->first();
+        $invoice->sub_total = $request->subtotal;
+        $invoice->total = $request->total;
+        $invoice->customer_id = $request->customer_id;
+        $invoice->number = $request->number;
+        $invoice->date = $request->date;
+        $invoice->due_date = $request->due_date;
+        $invoice->discount = $request->discount;
+        $invoice->reference = $request->reference;
+        $invoice->terms_and_conditions = $request->terms_and_conditions;
+
+        $invoice->save();
+
+
+        $invoice->invoice_items()->delete();
+
+        $invoice_items = json_decode($request->invoice_items, true);
+        Log::info('Decoded invoice items:', ['invoice_items' => $invoice_items]);
+        if (is_array($invoice_items)) {
+            foreach ($invoice_items as $item) {
+                $itemdata = [
+                    'product_id' => $item['product_id'],
+                    'invoice_id' => $invoice->id,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                ];
+                InvoiceItem::create($itemdata);
+            }
+        } else {
+            return response()->json(['error' => 'Invalid invoice items data'], 400);
+        }
+
     }
 
     public function index()

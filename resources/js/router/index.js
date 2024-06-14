@@ -4,6 +4,7 @@ import dashboard from '../components/dashboard.vue';
 import invoice from '../components/invoice/index.vue';
 import invoiceNew from '../components/invoice/new.vue';
 import invoiceShow from '../components/invoice/show.vue';
+import invoiceEdit from '../components/invoice/edit.vue';
 import users_form from '../components/users-form.vue';
 import users_list from '../components/users-list.vue';
 import notfound from '../components/notfound.vue';
@@ -26,6 +27,11 @@ const routes = [
     {
         path: '/invoice/show/:id',
         component: invoiceShow,
+        props: true,
+    },
+    {
+        path: '/invoice/edit/:id',
+        component: invoiceEdit,
         props: true,
     },
     {
